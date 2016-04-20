@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Here is where we apply style to the items in the ListView widget
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:textSize="20sp"
+    android:textColor="#ffffff"
+    android:id="@+id/list_item_eventList_textview"
+    android:background="#ce2828"
+    android:minHeight="40dp"
+    android:padding="10dp"
+    android:textStyle="bold" />
