@@ -1,5 +1,6 @@
 package edu.bentley.casca;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,12 +18,12 @@ public class SQLHelper extends SQLiteOpenHelper{
     public static final String TABLE_NAME = "events";
     public static final int DATABASE_VERSION = 1;
     public static final String KEY_ID = "id";
-    private static final String KEY_EVENT = "eventTitle";
-    private static final String KEY_LOC = "location";
-    private static String KEY_STARTTIME = "startTime";
-    private static final String KEY_ENDTIME = "endTime";
-    private static final String KEY_DATE = "dateT";
-    private static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_EVENT = "eventTitle";
+    public static final String KEY_LOC = "location";
+    public static final String KEY_STARTTIME = "startTime";
+    public static final String KEY_ENDTIME = "endTime";
+    public static final String KEY_DATE = "dateT";
+    public static final String KEY_DESCRIPTION = "description";
     public static final String CREATE_TABLE = "CREATE TABLE events ("
             + KEY_ID + " integer primary key autoincrement,"
             + KEY_EVENT + " text,"
@@ -33,6 +34,8 @@ public class SQLHelper extends SQLiteOpenHelper{
             + KEY_DESCRIPTION + " text);";
 
     private Cursor cursor;
+
+    private ContentValues values;
 
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -81,5 +84,18 @@ public class SQLHelper extends SQLiteOpenHelper{
 
         return eventList;
 
+    }
+
+    public void addEvent(event newEvent){
+        SQLiteDatabase db = this.getWritableDatabase();
+        values = new ContentValues();
+        values.put(KEY_EVENT, newEvent.getEventTitle());
+        values.put(KEY_LOC, newEvent.getLocation());
+        values.put(KEY_STARTTIME, newEvent.getStartTime());
+        values.put(KEY_ENDTIME, newEvent.getEndTime());
+        values.put(KEY_DATE, newEvent.getDateT());
+        values.put(KEY_DESCRIPTION, newEvent.getDescription());
+        db.insert(TABLE_NAME, null, values);
+        db.close();
     }
 }

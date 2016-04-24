@@ -2,8 +2,8 @@ package edu.bentley.casca;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View.OnClickListener;
@@ -12,6 +12,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import android.app.TimePickerDialog;
 import android.app.DatePickerDialog;
+
 public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_eventTitle;
     private EditText edit_location;
@@ -19,11 +20,10 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_endT;
     private EditText edit_date;
     private EditText edit_des;
-
     private Button edit_clear_button;
     private Button edit_create_button;
-    private Button btn_endT;
 
+    private SQLHelper helper;
 
     // Variable for storing current date and time
     private int mYear, mMonth, mDay, mHour, mMinute;
@@ -35,21 +35,24 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
 
+        // grab references to widgets
         edit_eventTitle = (EditText)findViewById(R.id.edit_eventTitle_f);
         edit_location = (EditText)findViewById(R.id.edit_location_f);
-
         edit_des = (EditText)findViewById(R.id.edit_des_f);
         edit_clear_button = (Button)findViewById(R.id.edit_clear_button);
-        edit_clear_button.setOnClickListener(this);
         edit_create_button = (Button)findViewById(R.id.edit_create_button);
+        edit_startT = (EditText) findViewById(R.id.edit_startT_f);
+        edit_endT = (EditText)findViewById(R.id.edit_endT_f);
+        edit_date = (EditText)findViewById(R.id.edit_date_f);
+
+        // set listeners
+        edit_clear_button.setOnClickListener(this);
+        edit_startT.setOnClickListener(this);
+        edit_endT.setOnClickListener(this);
+        edit_date.setOnClickListener(this);
         edit_create_button.setOnClickListener(this);
 
-        edit_startT = (EditText) findViewById(R.id.edit_startT_f);
-        edit_startT.setOnClickListener(this);
-        edit_endT = (EditText)findViewById(R.id.edit_endT_f);
-        edit_endT.setOnClickListener(this);
-        edit_date = (EditText)findViewById(R.id.edit_date_f);
-        edit_date.setOnClickListener(this);
+        helper = new SQLHelper(this);
 
     }
 
@@ -64,7 +67,19 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                 edit_endT.setText("");
                 break;
             case R.id.edit_create_button:
-                //save a new object send the oject to mainactivity不会
+                //save the current info as a new entry to the database
+                helper.addEvent(new event(
+                        edit_eventTitle.getText().toString(),
+                        edit_location.getText().toString(),
+                        edit_startT.getText().toString(),
+                        edit_endT.getText().toString(),
+                        edit_date.getText().toString(),
+                        edit_des.getText().toString()
+                ));
+                // debug print out
+                Log.d("DebugInsert", edit_eventTitle.getText().toString());
+
+                // go back to MainActivity
                 break;
             case R.id.edit_startT_f:
                 // Process to get Current Time
