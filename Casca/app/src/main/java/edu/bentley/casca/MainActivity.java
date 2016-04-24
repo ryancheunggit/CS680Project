@@ -1,6 +1,5 @@
 package edu.bentley.casca;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,11 +12,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,34 +37,35 @@ public class MainActivity extends AppCompatActivity {
 
     // create an array with default values
     ArrayList<String> eventList = new ArrayList<String>(Arrays.asList(eventListData));
-
+    ArrayList<event> resultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+        // create a db helper object
         helper = new SQLHelper(this);
 
-        //create database
+        // create database
         try {
             db = helper.getWritableDatabase();
         } catch(SQLException e) {
             Log.d("SQLiteDemo", "Create database failed");
         }
 
+
+        // test to be removed
+        initializeList();
+        /*
         // for debug purpose
         ArrayList<event> testList = helper.getEvents();
-        for (int i = 0; i < testList.size(); i++){
-            Log.d("Debug", "lalala" + testList.get(i).toString());
-        }
 
         eventList.clear();
 
         for (int i = 0; i < testList.size(); i++){
             eventList.add(testList.get(i).getStartTime() + " " + testList.get(i).getEventTitle());
         }
+        */
 
         // set up array adapter
         eventListAdapter = new ArrayAdapter<String>(
@@ -86,7 +84,11 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int clickedEventId = resultList.get(position).getId();
+                Log.d("DebugWhatPosition", ""+position);
+                Log.d("DebugWhatId", ""+clickedEventId);
                 Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
+                displayDetailIntent.putExtra("id", clickedEventId);
                 startActivity(displayDetailIntent);
             }
         });
@@ -117,6 +119,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+
+    public void initializeList(){
+        // get the current day, month and year
+        Calendar c = Calendar.getInstance();
+        String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(c.get(Calendar.MONTH)+1);
+        String year = String.valueOf(c.get(Calendar.YEAR));
+
+        // query the database and get events for that day
+        resultList = helper.queryEvent(day, month, year);
+
+        // clear the array list which provides value for list view
+        eventList.clear();
+
+        // add events info to the array based on query results
+        for (int i = 0; i < resultList.size(); i++){
+            eventList.add(resultList.get(i).getStartTime() + " " + resultList.get(i).getEventTitle());
+        }
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        initializeList();
+        eventListAdapter.notifyDataSetChanged();
     }
 
 }

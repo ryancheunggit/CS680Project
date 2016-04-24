@@ -1,5 +1,6 @@
 package edu.bentley.casca;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import android.app.TimePickerDialog;
 import android.app.DatePickerDialog;
+import android.widget.Toast;
 
 public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_eventTitle;
@@ -67,19 +69,32 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                 edit_endT.setText("");
                 break;
             case R.id.edit_create_button:
-                //save the current info as a new entry to the database
-                helper.addEvent(new event(
-                        edit_eventTitle.getText().toString(),
-                        edit_location.getText().toString(),
-                        edit_startT.getText().toString(),
-                        edit_endT.getText().toString(),
-                        edit_date.getText().toString(),
-                        edit_des.getText().toString()
-                ));
-                // debug print out
-                Log.d("DebugInsert", edit_eventTitle.getText().toString());
+                if (edit_eventTitle.getText().toString().equals("") ||
+                        edit_location.getText().toString().equals("") ||
+                        edit_startT.getText().toString().equals("") ||
+                        edit_endT.getText().toString().equals("") ||
+                        edit_date.getText().toString().equals("")){
+                    // if there are fields that is still empty, show a message, do not do insert
+                    Toast.makeText(this, "Invalid Inputs", Toast.LENGTH_SHORT);
+                }
+                else {
+                    // if fields are not empty
+                    //save the current info as a new entry to the database
+                    helper.addEvent(new event(
+                            edit_eventTitle.getText().toString(),
+                            edit_location.getText().toString(),
+                            edit_startT.getText().toString(),
+                            edit_endT.getText().toString(),
+                            edit_date.getText().toString(),
+                            edit_des.getText().toString()
+                    ));
+                    // debug print out
+                    Log.d("DebugInsert", edit_eventTitle.getText().toString());
 
-                // go back to MainActivity
+                    // go back to MainActivity
+                    Intent goBack = new Intent(this, MainActivity.class);
+                    startActivity(goBack);
+                }
                 break;
             case R.id.edit_startT_f:
                 // Process to get Current Time
