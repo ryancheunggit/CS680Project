@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("DebugWhatPosition", ""+position);
                 Log.d("DebugWhatId", ""+clickedEventId);
                 Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
-                displayDetailIntent.putExtra("id", clickedEventId);
+                displayDetailIntent.putExtra("id", "" + clickedEventId);
                 startActivity(displayDetailIntent);
             }
         });

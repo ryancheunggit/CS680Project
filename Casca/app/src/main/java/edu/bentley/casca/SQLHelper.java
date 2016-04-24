@@ -128,6 +128,8 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         // get a cursor to find events of a specific date
         cursor = db.rawQuery("SELECT * FROM events WHERE id =?", new String[]{id});
+
+        cursor.moveToFirst();
         return new event(
                 Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1),
@@ -136,7 +138,6 @@ public class SQLHelper extends SQLiteOpenHelper {
                 cursor.getString(4),
                 cursor.getString(5),
                 cursor.getString(6)
-        );
-
+            );
     }
 }
