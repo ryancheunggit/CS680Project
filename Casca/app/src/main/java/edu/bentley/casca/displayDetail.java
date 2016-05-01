@@ -1,8 +1,8 @@
 package edu.bentley.casca;
-
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class displayDetail extends AppCompatActivity {
@@ -44,4 +44,30 @@ public class displayDetail extends AppCompatActivity {
         eventDate.setText(ent.getDateT());
         eventDescription.setText(ent.getDescription());
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.display_detail_menu, menu);
+        return true;
+    }
+
+    // event handlers for option menu items
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+/*
+        switch (item.getItemId()) {
+            case R.id.menu_add_event: {
+                Intent addEventIntent = new Intent(this, addEvent.class);
+                //startActivity(addEventIntent);
+                startActivityForResult(addEventIntent,1);
+                // Toast.makeText(this, "You clicked add event", Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
+     */
+        return true;
+    }
+
 }

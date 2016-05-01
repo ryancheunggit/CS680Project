@@ -14,6 +14,7 @@ import java.util.ArrayList;
  */
 public class SQLHelper extends SQLiteOpenHelper {
 
+    // Constant values
     public static final String DATABASE_NAME = "events.db";
     public static final String TABLE_NAME = "events";
     public static final int DATABASE_VERSION = 1;
@@ -34,18 +35,18 @@ public class SQLHelper extends SQLiteOpenHelper {
             + KEY_DESCRIPTION + " text);";
 
     private Cursor cursor;
-
     private ContentValues values;
 
+    // constructor
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    //called to create table
+    // called to create table
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sql = CREATE_TABLE;
-        Log.d("SQLiteDemo", "onCreate: " + sql);
+        Log.d("Create Table", "Creating table using: " + sql);
         db.execSQL(sql);
     }
 
@@ -88,6 +89,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
     */
 
+    // helper method that will insert a event into database
     public void addEvent(event newEvent) {
         SQLiteDatabase db = this.getWritableDatabase();
         values = new ContentValues();
@@ -101,35 +103,43 @@ public class SQLHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // helper method, query events for a given day
     public ArrayList<event> queryEvent(String day, String month, String year) {
+
+        // get database
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // get a cursor to find events of a specific date
+        // get a cursor, using the query
         cursor = db.rawQuery("SELECT * FROM events WHERE dateT =?", new String[]{day + "-" + month + "-" + year});
-
         // Log.d("DebugQueryCursor", "" + cursor.getCount()); //debug output
 
+        // populate arraylist with events
         ArrayList<event> returnList = new ArrayList<event>();
         while (cursor.moveToNext()) {
-            returnList.add(new event(
-                    Integer.parseInt(cursor.getString(0)),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getString(5),
-                    cursor.getString(6)
+            returnList.add(new event( // convert string valued query results into event objects
+                Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4),
+                cursor.getString(5),
+                cursor.getString(6)
             ));
         }
         return returnList;
     }
 
+    // helper method, query events using id (id is the primary key for event)
     public event queryEvent(String id) {
+        // get the database
         SQLiteDatabase db = this.getWritableDatabase();
         // get a cursor to find events of a specific date
         cursor = db.rawQuery("SELECT * FROM events WHERE id =?", new String[]{id});
 
+        // open up the cursor
         cursor.moveToFirst();
+
+        // construct an event object from query result and return it.
         return new event(
                 Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1),

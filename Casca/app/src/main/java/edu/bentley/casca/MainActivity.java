@@ -18,7 +18,7 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    // SQL lite database
+    // Using a local SQLite database on device
     private SQLiteDatabase db;
     private SQLHelper helper;
 
@@ -26,16 +26,11 @@ public class MainActivity extends AppCompatActivity {
     // the ArrayAdapter will take data from a source and
     // use it to populate the ListView it's attached to.
     private ArrayAdapter<String> eventListAdapter = null;
-    // initialize the toDoList with some dummy data
-    private String[] eventListData = {
-            "9:00 Breakfast",
-            "10:00 Catch Bus",
-            "12:00 Lunch",
-            "5:00 Class",
-            "9:50 Go home"};
+    // an empty array
+    private String[] eventListData = {"123","123"};
+    // the listView that show events line by line
     private ListView listView;
-
-    // create an array with default values
+    // create an array list with default values
     ArrayList<String> eventList = new ArrayList<String>(Arrays.asList(eventListData));
     ArrayList<event> resultList;
 
@@ -53,15 +48,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d("SQLiteDemo", "Create database failed");
         }
 
-
         // test to be removed
         initializeList();
         /*
         // for debug purpose
         ArrayList<event> testList = helper.getEvents();
-
         eventList.clear();
-
         for (int i = 0; i < testList.size(); i++){
             eventList.add(testList.get(i).getStartTime() + " " + testList.get(i).getEventTitle());
         }
@@ -81,21 +73,23 @@ public class MainActivity extends AppCompatActivity {
         // Get a reference to the ListView, and attach this adapter to it.
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(eventListAdapter);
+
+        // define event handler on the item in listView been clicked
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //get the id for event
                 int clickedEventId = resultList.get(position).getId();
-                Log.d("DebugWhatPosition", ""+position);
-                Log.d("DebugWhatId", ""+clickedEventId);
+                // Log.d("DebugWhatPosition", ""+position); // debug print out
+                // Log.d("DebugWhatId", ""+clickedEventId); // debug print out
+                // create an intent
                 Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
+                // put the id of the event as extra data to the intent
                 displayDetailIntent.putExtra("id", "" + clickedEventId);
+                // start the displayDetail activity using the intent, the id number will be passed
                 startActivity(displayDetailIntent);
             }
         });
-        //hide title and icon in action bar
-        // ActionBar actionBar = getActionBar();
-        //actionBar.setDisplayShowTitleEnabled(false);
-        //actionBar.setDisplayUseLogoEnabled(false);
     }
 
     @Override

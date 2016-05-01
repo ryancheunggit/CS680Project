@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,8 +43,6 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
         edit_eventTitle = (EditText)findViewById(R.id.edit_eventTitle_f);
         edit_location = (EditText)findViewById(R.id.edit_location_f);
         edit_des = (EditText)findViewById(R.id.edit_des_f);
-        edit_clear_button = (Button)findViewById(R.id.edit_clear_button);
-        edit_create_button = (Button)findViewById(R.id.edit_create_button);
         edit_startT = (EditText) findViewById(R.id.edit_startT_f);
         edit_endT = (EditText)findViewById(R.id.edit_endT_f);
         edit_date = (EditText)findViewById(R.id.edit_date_f);
@@ -61,41 +61,6 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.edit_clear_button:
-                edit_eventTitle.setText("");
-                edit_des.setText("");
-                edit_location.setText("");
-                edit_startT.setText("");
-                edit_endT.setText("");
-                break;
-            case R.id.edit_create_button:
-                if (edit_eventTitle.getText().toString().equals("") ||
-                        edit_location.getText().toString().equals("") ||
-                        edit_startT.getText().toString().equals("") ||
-                        edit_endT.getText().toString().equals("") ||
-                        edit_date.getText().toString().equals("")){
-                    // if there are fields that is still empty, show a message, do not do insert
-                    Toast.makeText(this, "Invalid Inputs", Toast.LENGTH_SHORT);
-                }
-                else {
-                    // if fields are not empty
-                    //save the current info as a new entry to the database
-                    helper.addEvent(new event(
-                            edit_eventTitle.getText().toString(),
-                            edit_location.getText().toString(),
-                            edit_startT.getText().toString(),
-                            edit_endT.getText().toString(),
-                            edit_date.getText().toString(),
-                            edit_des.getText().toString()
-                    ));
-                    // debug print out
-                    Log.d("DebugInsert", edit_eventTitle.getText().toString());
-
-                    // go back to MainActivity
-                    Intent goBack = new Intent(this, MainActivity.class);
-                    startActivity(goBack);
-                }
-                break;
             case R.id.edit_startT_f:
                 // Process to get Current Time
                 final Calendar c = Calendar.getInstance();
@@ -157,6 +122,56 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
         }
 
         }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.add_event_menu, menu);
+        return true;
+    }
+
+    // event handlers for option menu items
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_clear_event:
+                edit_eventTitle.setText("");
+                edit_des.setText("");
+                edit_location.setText("");
+                edit_startT.setText("");
+                edit_endT.setText("");
+                break;
+            case R.id.menu_add_event:
+                if (edit_eventTitle.getText().toString().equals("") ||
+                        edit_location.getText().toString().equals("") ||
+                        edit_startT.getText().toString().equals("") ||
+                        edit_endT.getText().toString().equals("") ||
+                        edit_date.getText().toString().equals("")){
+                    // if there are fields that is still empty, show a message, do not do insert
+                    Toast.makeText(this, "Invalid Inputs", Toast.LENGTH_SHORT);
+                }
+                else {
+                    // if fields are not empty
+                    //save the current info as a new entry to the database
+                    helper.addEvent(new event(
+                            edit_eventTitle.getText().toString(),
+                            edit_location.getText().toString(),
+                            edit_startT.getText().toString(),
+                            edit_endT.getText().toString(),
+                            edit_date.getText().toString(),
+                            edit_des.getText().toString()
+                    ));
+                    // debug print out
+                    Log.d("DebugInsert", edit_eventTitle.getText().toString());
+                    // go back to MainActivity
+                    Intent goBack = new Intent(this, MainActivity.class);
+                    startActivity(goBack);
+                }
+                break;
+            }
+        return true;
+    }
 
 }
 
