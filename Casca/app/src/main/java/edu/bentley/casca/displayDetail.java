@@ -1,6 +1,9 @@
 package edu.bentley.casca;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -56,17 +59,27 @@ public class displayDetail extends AppCompatActivity {
     // event handlers for option menu items
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-/*
         switch (item.getItemId()) {
-            case R.id.menu_add_event: {
-                Intent addEventIntent = new Intent(this, addEvent.class);
-                //startActivity(addEventIntent);
-                startActivityForResult(addEventIntent,1);
-                // Toast.makeText(this, "You clicked add event", Toast.LENGTH_SHORT).show();
+            case R.id.menu_share: {
+                // generate message content
+                String message = "Event: " + eventTitle.getText().toString() + "\n" +
+                        "Location: " + eventLocation.getText().toString() + "\n" +
+                        "Start Time: " + eventStartTime.getText().toString() + "\n" +
+                        "End Time: " + eventEndTime.getText().toString() + "\n" +
+                        "Date: " + eventDate.getText().toString() + "\n" +
+                        "Description: " + eventDescription.getText().toString();
+
+                Log.d("DebugMessage:", message);
+                // create intent obj
+                Intent smsShareIntent = new Intent(Intent.ACTION_VIEW);
+                // put event information to the intent
+                smsShareIntent.setData(Uri.parse("sms:"));
+                smsShareIntent.putExtra("sms_body", message);
+                // start the activity
+                startActivity(smsShareIntent);
                 break;
             }
         }
-     */
         return true;
     }
 
