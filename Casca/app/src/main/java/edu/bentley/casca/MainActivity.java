@@ -1,5 +1,7 @@
 package edu.bentley.casca;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;

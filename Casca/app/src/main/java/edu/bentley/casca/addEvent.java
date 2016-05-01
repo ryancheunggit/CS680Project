@@ -1,5 +1,7 @@
 package edu.bentley.casca;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +26,7 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_endT;
     private EditText edit_date;
     private EditText edit_des;
-    private Button edit_clear_button;
-    private Button edit_create_button;
+
 
     private SQLHelper helper;
 
@@ -48,11 +49,9 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
         edit_date = (EditText)findViewById(R.id.edit_date_f);
 
         // set listeners
-        edit_clear_button.setOnClickListener(this);
         edit_startT.setOnClickListener(this);
         edit_endT.setOnClickListener(this);
         edit_date.setOnClickListener(this);
-        edit_create_button.setOnClickListener(this);
 
         helper = new SQLHelper(this);
 
@@ -142,7 +141,7 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                 edit_startT.setText("");
                 edit_endT.setText("");
                 break;
-            case R.id.menu_add_event:
+            case R.id.menu_create_event:
                 if (edit_eventTitle.getText().toString().equals("") ||
                         edit_location.getText().toString().equals("") ||
                         edit_startT.getText().toString().equals("") ||
@@ -164,6 +163,42 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     ));
                     // debug print out
                     Log.d("DebugInsert", edit_eventTitle.getText().toString());
+
+                    // ---- create an alarm that is 5 minuts before the event ---- //
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+                    Calendar calendar = Calendar.getInstance();
+                    // Log.d("DebugAdd", edit_date.getText().toString());   //debug output
+                    // Log.d("DebugAdd", edit_startT.getText().toString()); //debug output
+                    String date = edit_date.getText().toString();
+                    String Year = date.substring(date.lastIndexOf("-") + 1);
+                    String Month = date.substring(date.indexOf("-") + 1, date.lastIndexOf("-"));
+                    String Day = date.substring(0, date.indexOf("-"));
+                    String StartTime = edit_startT.getText().toString();
+                    String Hour = StartTime.substring(0, StartTime.indexOf(":"));
+                    String Minute = StartTime.substring(StartTime.indexOf(":")+1);
+                    // Log.d("DebugAdd", "Year?" + Year);     //debug output
+                    // Log.d("DebugAdd", "Month?" + Month);   //debug output
+                    // Log.d("DebugAdd", "Day?" + Day);       //debug output
+                    calendar.set(Calendar.YEAR, Integer.parseInt(Year));
+                    calendar.set(Calendar.MONTH, Integer.parseInt(Month));  //Note: might need to -1
+                    calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(Day));
+                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Hour));
+                    calendar.set(Calendar.MINUTE, Integer.parseInt(Minute));
+                    calendar.set(Calendar.SECOND, 0);
+
+                    Intent i = new Intent("edu.bentley.casca");
+                    i.putExtra("CascaEventNotif", 1);
+
+                    PendingIntent displayIntent = PendingIntent.getActivity(
+                            getBaseContext(), 0, i, 0
+                    );
+
+                    // set alarm to trigger
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,
+                            calendar.getTimeInMillis() - 1000 * 60 * 15,  // notify 15 minutes ahead
+                            displayIntent);
+
                     // go back to MainActivity
                     Intent goBack = new Intent(this, MainActivity.class);
                     startActivity(goBack);
@@ -172,6 +207,9 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
             }
         return true;
     }
+
+
+
 
 }
 
