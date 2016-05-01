@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> eventList = new ArrayList<String>(Arrays.asList(eventListData));
     ArrayList<event> resultList;
 
+    // reference to the calander view
+    private CalendarView calenderview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +52,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d("SQLiteDemo", "Create database failed");
         }
 
-        // test to be removed
-        initializeList();
+
+        // get the current day, month and year
+        Calendar c = Calendar.getInstance();
+        String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(c.get(Calendar.MONTH)+1);
+        String year = String.valueOf(c.get(Calendar.YEAR));
+
+        // initialize list based on query results, on events of a given day.
+        initializeList(year, month, day);
         /*
         // for debug purpose
         ArrayList<event> testList = helper.getEvents();
@@ -90,6 +101,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(displayDetailIntent);
             }
         });
+
+        calenderview = (CalendarView) findViewById(R.id.calendarView);
+        calenderview.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int day) {
+                // Log.d("calendarView", "whats the year: " + year + "");   //debug output
+                // Log.d("calendarView", "whats the month: " + month + ""); //debug output
+                // Log.d("calendarView", "whats the day: " + day + "");     //debug output
+                // regenerate the list
+                // month start from 0 by default here, should + 1 to get the actual month
+                initializeList(year + "", (month+1) + "", day + "");
+                eventListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -115,14 +140,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-    public void initializeList(){
-        // get the current day, month and year
-        Calendar c = Calendar.getInstance();
-        String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
-        String month = String.valueOf(c.get(Calendar.MONTH)+1);
-        String year = String.valueOf(c.get(Calendar.YEAR));
-
+    /**
+     * helper method fill the eventlist with events of a given day.
+     * */
+    public void initializeList(String year, String month, String day){
         // query the database and get events for that day
         resultList = helper.queryEvent(day, month, year);
 
@@ -139,7 +160,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        initializeList();
+        // get the current day, month and year
+        Calendar c = Calendar.getInstance();
+        String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(c.get(Calendar.MONTH)+1);
+        String year = String.valueOf(c.get(Calendar.YEAR));
+        initializeList(year, month, day);
         eventListAdapter.notifyDataSetChanged();
     }
 
