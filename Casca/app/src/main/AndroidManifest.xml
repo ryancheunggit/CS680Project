@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Casca: not yet another calendar app
+    CS680 Group Project
+    Ren Zhang, Yuge Xiao, Yasha Guo
+    contact: ryanzjlib@gmail.com
+    https://github.com/ryancheunggit/CS680Project
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.bentley.casca">
 

@@ -5,10 +5,6 @@
         android:id="@+id/menu_delete_event"
         app:showAsAction="ifRoom"
         android:title="Delete" />
-    <item
-        android:id="@+id/menu_edit_event"
-        app:showAsAction="ifRoom"
-        android:title="Edit" />
     <item android:id="@+id/menu_share"
         app:showAsAction="ifRoom"
         android:title="Share" />

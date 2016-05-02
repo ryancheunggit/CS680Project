@@ -55,40 +55,6 @@ public class SQLHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    /* get all the events from database return a array list of events
-    public ArrayList<event> getEvents () {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        cursor = db.query(TABLE_NAME,
-            null, null, null, null, null, KEY_STARTTIME);
-
-        Log.d("Debug", "lalala" + cursor.getCount());
-
-        ArrayList<event> eventList = new ArrayList<event>();
-
-        while (cursor.moveToNext()){
-            // Log.d("Debug", "lalala" + " in the loop?");
-
-
-            int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
-            String eventTitle = cursor.getString(cursor.getColumnIndex(KEY_EVENT));
-            // Log.d("Debug", "lalala" + eventTitle);
-
-            String location = cursor.getString(cursor.getColumnIndex(KEY_LOC));
-            String startTime = cursor.getString(cursor.getColumnIndex(KEY_STARTTIME));
-            String endTime = cursor.getString(cursor.getColumnIndex(KEY_ENDTIME));
-            String dateT = cursor.getString(cursor.getColumnIndex(KEY_DATE));
-            String description = cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION));
-            Log.d("Get any query results? ", "1" + eventTitle + location);
-            eventList.add(new event(id, eventTitle, location, startTime, endTime, dateT, description));
-        }
-        db.close();
-
-        return eventList;
-
-    }
-    */
-
     // helper method that will insert a event into database
     public void addEvent(event newEvent) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -149,5 +115,12 @@ public class SQLHelper extends SQLiteOpenHelper {
                 cursor.getString(5),
                 cursor.getString(6)
             );
+    }
+
+    // helper method, delete an event based on id
+    public boolean deleteEvent(String id) {
+        // get the database
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.delete(TABLE_NAME, KEY_ID + "=" + id, null) > 0;
     }
 }

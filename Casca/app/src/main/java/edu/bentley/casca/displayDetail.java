@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import java.text.DateFormatSymbols;
@@ -36,6 +35,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
     private TextView eventDescription;
     private TextToSpeech speaker;
     private GoogleMap myMap;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
 
         // the extra info in intent will be the id of event
         Bundle extras = getIntent().getExtras();
-        String id = extras.getString("id");
+        id = extras.getString("id");
         // Log.d("DebugDetailId0", id);   // debug output
 
         // get the event based on id key value from the database
@@ -119,7 +119,6 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 speak(speakEventDes);
                 break;
         }
-
     }
 
     @Override
@@ -151,6 +150,15 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 smsShareIntent.putExtra("sms_body", message);
                 // start the activity
                 startActivity(smsShareIntent);
+                break;
+            }
+            case R.id.menu_delete_event: {
+                // delete the event from database and go back to Main activity
+                boolean deleted = helper.deleteEvent(id);
+                if (deleted) {
+                    Intent goBacktoMain = new Intent(this, MainActivity.class);
+                    startActivity(goBacktoMain);
+                }
                 break;
             }
         }
@@ -269,4 +277,21 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         );
     }
 
+
+    // remember to shunt down tts
+    @Override
+    protected void onStop() {
+        super.onStop();
+        speaker.stop();
+        speaker.shutdown();
+        Log.d("DebugTTS", "shutdown TTS");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        speaker.stop();
+        speaker.shutdown();
+        Log.d("DebugTTS", "shutdown TTS");
+    }
 }

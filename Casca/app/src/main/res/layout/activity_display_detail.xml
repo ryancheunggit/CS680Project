@@ -40,13 +40,13 @@
             android:minHeight="30dp">
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="Location"
                 android:layout_weight="1"
                 android:textSize="20dp" />
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:id="@+id/eventLocationDetail"
                 android:textSize="20dp" />

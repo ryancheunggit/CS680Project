@@ -5,7 +5,4 @@
         android:id="@+id/menu_add_event"
         app:showAsAction="ifRoom"
         android:title="Add Event" />
-    <item android:id="@+id/menu_settings"
-        app:showAsAction="ifRoom"
-        android:title="Settings" />
 </menu>
