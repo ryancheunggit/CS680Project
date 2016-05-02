@@ -39,20 +39,19 @@
 
         <activity android:name=".addEvent" />
         <activity android:name=".displayDetail" />
-        <activity
-            android:name=".AlarmDetails"
-            android:label="Details of alarm">
-            <intent-filter>
-                <action android:name="edu.bentley.casca.AlarmDetails" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".DisplayNotifications"></activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <receiver android:name=".AlarmReceiver" >
+        <intent-filter>
+            <action android:name="NOTIFICATION_SERVICE" />
+        </intent-filter>
+    </receiver>
+
 
 </manifest>

@@ -89,18 +89,18 @@ public class MainActivity extends AppCompatActivity {
 
         // define event handler on the item in listView been clicked
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //get the id for event
-                int clickedEventId = resultList.get(position).getId();
-                // Log.d("DebugWhatPosition", ""+position); // debug print out
-                // Log.d("DebugWhatId", ""+clickedEventId); // debug print out
-                // create an intent
-                Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
-                // put the id of the event as extra data to the intent
-                displayDetailIntent.putExtra("id", "" + clickedEventId);
-                // start the displayDetail activity using the intent, the id number will be passed
-                startActivity(displayDetailIntent);
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //get the id for event
+            int clickedEventId = resultList.get(position).getId();
+            // Log.d("DebugWhatPosition", ""+position); // debug print out
+            // Log.d("DebugWhatId", ""+clickedEventId); // debug print out
+            // create an intent
+            Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
+            // put the id of the event as extra data to the intent
+            displayDetailIntent.putExtra("id", "" + clickedEventId);
+            // start the displayDetail activity using the intent, the id number will be passed
+            startActivity(displayDetailIntent);
             }
         });
 
@@ -108,13 +108,13 @@ public class MainActivity extends AppCompatActivity {
         calenderview.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int day) {
-                // Log.d("calendarView", "whats the year: " + year + "");   //debug output
-                // Log.d("calendarView", "whats the month: " + month + ""); //debug output
-                // Log.d("calendarView", "whats the day: " + day + "");     //debug output
-                // regenerate the list
-                // month start from 0 by default here, should + 1 to get the actual month
-                initializeList(year + "", (month+1) + "", day + "");
-                eventListAdapter.notifyDataSetChanged();
+            // Log.d("calendarView", "whats the year: " + year + "");   //debug output
+            // Log.d("calendarView", "whats the month: " + month + ""); //debug output
+            // Log.d("calendarView", "whats the day: " + day + "");     //debug output
+            // regenerate the list
+            // month start from 0 by default here, should + 1 to get the actual month
+            initializeList(year + "", (month+1) + "", day + "");
+            eventListAdapter.notifyDataSetChanged();
             }
         });
     }

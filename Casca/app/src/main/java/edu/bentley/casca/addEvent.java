@@ -1,8 +1,11 @@
 package edu.bentley.casca;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,8 +29,9 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_endT;
     private EditText edit_date;
     private EditText edit_des;
-
-
+    private NotificationManager mNotificationManager;
+    private Notification notifyDetails;
+    private int SIMPLE_NOTFICATION_ID = 1;
     private SQLHelper helper;
 
     // Variable for storing current date and time
@@ -119,8 +123,7 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                         }, mYear, mMonth, mDay);
                 dpd.show();
         }
-
-        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -161,15 +164,11 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                             edit_date.getText().toString(),
                             edit_des.getText().toString()
                     ));
-                    // debug print out
-                    Log.d("DebugInsert", edit_eventTitle.getText().toString());
+                    // Log.d("DebugInsert", edit_eventTitle.getText().toString());                     // debug print out
 
-                    // ---- create an alarm that is 5 minuts before the event ---- //
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    int id = helper.getId();
 
-                    Calendar calendar = Calendar.getInstance();
-                    // Log.d("DebugAdd", edit_date.getText().toString());   //debug output
-                    // Log.d("DebugAdd", edit_startT.getText().toString()); //debug output
+                    // get time data info
                     String date = edit_date.getText().toString();
                     String Year = date.substring(date.lastIndexOf("-") + 1);
                     String Month = date.substring(date.indexOf("-") + 1, date.lastIndexOf("-"));
@@ -180,6 +179,12 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     // Log.d("DebugAdd", "Year?" + Year);     //debug output
                     // Log.d("DebugAdd", "Month?" + Month);   //debug output
                     // Log.d("DebugAdd", "Day?" + Day);       //debug output
+
+                    // ---- create an alarm that is 5 minuts before the event ---- //
+                    Calendar calendar = Calendar.getInstance();
+                    // Log.d("DebugAdd", edit_date.getText().toString());   //debug output
+                    // Log.d("DebugAdd", edit_startT.getText().toString()); //debug output
+
                     calendar.set(Calendar.YEAR, Integer.parseInt(Year));
                     calendar.set(Calendar.MONTH, Integer.parseInt(Month));  //Note: might need to -1
                     calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(Day));
@@ -187,17 +192,36 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     calendar.set(Calendar.MINUTE, Integer.parseInt(Minute));
                     calendar.set(Calendar.SECOND, 0);
 
-                    Intent i = new Intent("edu.bentley.casca");
-                    i.putExtra("CascaEventNotif", 1);
+                    // create a notification
+                    mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    Intent notifyIntent = new Intent(this, displayDetail.class);
+                    // put id to intent
+                    notifyIntent.putExtra("id", "" + id);
+                    // Log.d("Did I got the id?", id+""); //debug output
 
-                    PendingIntent displayIntent = PendingIntent.getActivity(
-                            getBaseContext(), 0, i, 0
-                    );
+                    //create pending intent to wrap intent so that it
+                    //will fire when notification selected.
+                    //The PendingIntent can only be used once.
+                    PendingIntent pendingIntent = PendingIntent.getActivity(
+                            this, 0, notifyIntent,
+                            PendingIntent.FLAG_ONE_SHOT);
 
-                    // set alarm to trigger
-                    alarmManager.set(AlarmManager.RTC_WAKEUP,
-                            calendar.getTimeInMillis() - 1000 * 60 * 15,  // notify 15 minutes ahead
-                            displayIntent);
+                    //set icon, text, and time on notification status bar
+                    notifyDetails = new Notification.Builder(this)
+                            .setContentTitle(edit_eventTitle.getText().toString())
+                            .setContentText(edit_des.getText().toString())
+                            .setWhen(calendar.getTimeInMillis() - 5 * 1000 * 60)
+                            .setSmallIcon(R.drawable.icon)
+                            .addAction(R.drawable.icon, "casca", pendingIntent)
+                            //set Android to vibrate when notified
+                            .setVibrate(new long[]{1000, 1000, 2000, 2000})
+                            .build();
+
+                    Log.d("What specified time", "" + (calendar.getTimeInMillis() - 5 * 1000 * 60));
+                    Log.d("What system time", "" + System.currentTimeMillis());
+
+                    mNotificationManager.notify(SIMPLE_NOTFICATION_ID,
+                            notifyDetails);
 
                     // go back to MainActivity
                     Intent goBack = new Intent(this, MainActivity.class);

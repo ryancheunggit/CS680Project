@@ -123,4 +123,13 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.delete(TABLE_NAME, KEY_ID + "=" + id, null) > 0;
     }
+
+    // helper method, get the id of the most recent added event
+    public int getId(){
+        // get the database
+        SQLiteDatabase db = this.getReadableDatabase();
+        cursor = db.rawQuery("SELECT MAX(id) FROM events", new String[]{});
+        cursor.moveToFirst();
+        return Integer.parseInt(cursor.getString(0));
+    }
 }
