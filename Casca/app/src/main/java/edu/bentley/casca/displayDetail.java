@@ -1,22 +1,32 @@
 package edu.bentley.casca;
+
 import android.content.Intent;
 import android.net.Uri;
-import android.speech.tts.TextToSpeech;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import java.text.DateFormatSymbols;
-
+import android.location.Geocoder;
 import java.util.Locale;
+import java.util.List;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import android.app.FragmentManager;
+import android.location.*;
 
-public class displayDetail extends AppCompatActivity implements OnClickListener,OnInitListener {
-
+public class displayDetail extends AppCompatActivity implements OnClickListener, OnInitListener {
     private SQLHelper helper;
     private TextView eventTitle;
     private TextView eventLocation;
@@ -25,22 +35,28 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
     private TextView eventDate;
     private TextView eventDescription;
     private TextToSpeech speaker;
+    private GoogleMap myMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_detail);
 
+        // get sqlite database helper
         helper = new SQLHelper(this);
 
+        // the extra info in intent will be the id of event
         Bundle extras = getIntent().getExtras();
         String id = extras.getString("id");
-        // Log.d("DebugDetailId0", id);
+        // Log.d("DebugDetailId0", id);   // debug output
+
+        // get the event based on id key value from the database
         event ent = helper.queryEvent(id);
 
-        // Log.d("DebugDetailId", ent.getId()+"");
-        // Log.d("DebugDetailId", ent.getStartTime()+"");
+        // Log.d("DebugDetailId", ent.getId()+"");  // debug output
+        // Log.d("DebugDetailId", ent.getStartTime()+"");  // debug output
 
+        // grab references
         eventTitle = (TextView) findViewById(R.id.eventTitleDetail);
         eventLocation = (TextView) findViewById(R.id.eventLocationDetail);
         eventStartTime = (TextView) findViewById(R.id.eventStartTimeDetail);
@@ -48,23 +64,49 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         eventDate = (TextView) findViewById(R.id.eventDateDetail);
         eventDescription = (TextView) findViewById(R.id.eventDescriptionDetail);
 
+        // display information about events
         eventTitle.setText(ent.getEventTitle());
         eventLocation.setText(ent.getLocation());
         eventStartTime.setText(ent.getStartTime());
         eventEndTime.setText(ent.getEndTime());
         eventDate.setText(ent.getDateT());
         eventDescription.setText(ent.getDescription());
+
         //add listener on eventTitle and eventDescription to speak out content
         eventTitle.setOnClickListener(this);
         eventDescription.setOnClickListener(this);
-
         speaker = new TextToSpeech(this, this);
+
+        // set up map
+        FragmentManager myFragmentManager = getFragmentManager();
+        MapFragment myMapFragment =
+                (MapFragment)myFragmentManager.findFragmentById(R.id.map);
+        myMap = myMapFragment.getMap();
+        myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        myMap.getUiSettings().setZoomControlsEnabled(true);
+        myMap.getUiSettings().setCompassEnabled(true);
+        myMap.getUiSettings().setAllGesturesEnabled(true);
+
+        // get the position of the event location
+        LatLng newLatLng= getLocationFromAddress(ent.getLocation());
+
+        // Log.d("LatLng", newLatLng.toString()); //debug output
+        // use a marker on map
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(newLatLng)
+                .title(newLatLng.toString());
+        myMap.addMarker(markerOptions);
+
+        // move the camera to the initial position using an animation
+        flyto(newLatLng, 17, 3000);
     }
 
     @Override
     public void onClick(View view) {
+        // defines event handling for text view
         switch (view.getId()) {
             case R.id.eventTitleDetail:
+                // read out title and start time /date of the event
                 String returnDate = translateDate(eventDate.getText().toString());
                 String returnTime = translateTime(eventStartTime.getText().toString());
                 String speakEvent = eventTitle.getText().toString() +
@@ -72,6 +114,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 speak(speakEvent);
                 break;
             case R.id.eventDescriptionDetail:
+                // read out description of the event
                 String speakEventDes = eventDescription.getText().toString();
                 speak(speakEventDes);
                 break;
@@ -114,10 +157,12 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         return true;
     }
 
+    // tts function
     public void speak(String output) {
         speaker.speak(output, TextToSpeech.QUEUE_FLUSH, null, "Id 0");
     }
 
+    // initialize the tts
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             int result = speaker.setLanguage(Locale.US);
@@ -132,23 +177,22 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
             Log.e("TextToSpeech", "Could not initialize TextToSpeech.");
         }
     }
-//change numerical event date to standard date format: 5-1-2015: May first 2015"
+
+    //change numerical event date to standard date format: 5-1-2015: May first 2015"
     public String translateDate(String date) {
         DateFormatSymbols symbols = new DateFormatSymbols();
         String Year = date.substring(date.lastIndexOf("-") + 1);
         String Month = date.substring(date.indexOf("-") + 1, date.lastIndexOf("-"));
         String Day = date.substring(0, date.indexOf("-"));
-
         Month = symbols.getMonths()[Integer.parseInt(Month) - 1];
-
         String daySuffix = getDayOfMonthSuffix(Integer.parseInt(Day));
         String ordinalToday = Day + daySuffix;
         String returnDate = " "+ Month +" "+ ordinalToday +" " + Year;
-
         return returnDate;
     }
-//get correct suffix of dayofmonth
-    String getDayOfMonthSuffix(final int n) {
+
+    //get correct suffix of dayofmonth
+    public String getDayOfMonthSuffix(final int n) {
         if (n >= 11 && n <= 13) {
             return "th";
         }
@@ -163,8 +207,9 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 return "th";
         }
     }
-//change time to standard time format for textToSpeach to function well
-    String translateTime(String time) {
+
+    //change time to standard time format for textToSpeach to function well
+    public String translateTime(String time) {
         String Hour = time.substring(0, time.indexOf(":"));
         String Minute = time.substring(time.indexOf(":") + 1);
         int h = Integer.parseInt(Hour);
@@ -176,6 +221,52 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
             returnTime = h + " " + Minute + " AM ";
         }
         return returnTime;
+    }
+
+    // method to get location based on text address
+    public LatLng getLocationFromAddress(String strAddress) {
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+            Address location = address.get(0);
+            location.getLatitude();
+            location.getLongitude();
+
+            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return p1;
+    }
+
+    /**
+     * helper method, create cameraPosition based on given target and zoom level
+     * */
+    protected CameraPosition createCameraPosition(LatLng latlng, float zoomLevel){
+        CameraPosition position = CameraPosition.builder()
+                .target(latlng)
+                .zoom(zoomLevel)
+                .build();
+        return position;
+    }
+
+    /**
+     * helper method, change camera Position based on given target and zoom level
+     * */
+    protected void flyto(LatLng pos, float zoom, int time){
+        myMap.animateCamera(
+                CameraUpdateFactory.newCameraPosition(createCameraPosition(pos, zoom)), // camera target position
+                time, // animation time in m-seconds
+                null   // call back function
+        );
     }
 
 }

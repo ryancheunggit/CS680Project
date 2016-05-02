@@ -12,10 +12,8 @@ public class AlarmDetails extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_details);
         Log.d("Called?", "is AlarmDetails ever called?");
-
         // get a notification manager
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         nm.cancel(getIntent().getExtras().getInt("CascaEventNotif"));
     }
 }
