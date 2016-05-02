@@ -29,3 +29,11 @@
 + Wrote code to insert event based on the info user entered in addEvent activity
 + Wrote code to filter the events listed in the listView in main_activity, we can sepcify a date and only show events of that day
 + Wrote code to pass the id of the event been clicked at main_activity and when displayDetail is started, we now query that event and display the info to user.
+
+## May 1 2016
++ Share event info with SMS
++ Tried to implement notification
++ Added TTS
+
+## May 2 2016
++ Added Google Map display the location of event
