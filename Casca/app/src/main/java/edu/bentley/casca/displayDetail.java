@@ -134,15 +134,9 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_share: {
-                // generate message content
-                String message = "Event: " + eventTitle.getText().toString() + "\n" +
-                        "Location: " + eventLocation.getText().toString() + "\n" +
-                        "Start Time: " + eventStartTime.getText().toString() + "\n" +
-                        "End Time: " + eventEndTime.getText().toString() + "\n" +
-                        "Date: " + eventDate.getText().toString() + "\n" +
-                        "Description: " + eventDescription.getText().toString();
+                String message = prepareMessage();
 
-                Log.d("DebugMessage:", message);
+                // Log.d("DebugMessage:", message); //debug printout
                 // create intent obj
                 Intent smsShareIntent = new Intent(Intent.ACTION_VIEW);
                 // put event information to the intent
@@ -159,6 +153,14 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                     Intent goBacktoMain = new Intent(this, MainActivity.class);
                     startActivity(goBacktoMain);
                 }
+                break;
+            }
+            case R.id.menu_mail: {
+                // share the message using email
+                String message = prepareMessage();
+                Intent mailShareIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
+                mailShareIntent.putExtra(Intent.EXTRA_TEXT, message);
+                startActivity(mailShareIntent);
                 break;
             }
         }
@@ -275,6 +277,18 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 time, // animation time in m-seconds
                 null   // call back function
         );
+    }
+
+    // helper method prepare the message body for sms and email
+    public String prepareMessage(){
+        // generate message content
+        String message = "Event: " + eventTitle.getText().toString() + "\n" +
+                "Location: " + eventLocation.getText().toString() + "\n" +
+                "Start Time: " + eventStartTime.getText().toString() + "\n" +
+                "End Time: " + eventEndTime.getText().toString() + "\n" +
+                "Date: " + eventDate.getText().toString() + "\n" +
+                "Description: " + eventDescription.getText().toString();
+        return message;
     }
 
 

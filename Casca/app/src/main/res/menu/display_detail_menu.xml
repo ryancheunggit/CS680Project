@@ -7,5 +7,8 @@
         android:title="Delete" />
     <item android:id="@+id/menu_share"
         app:showAsAction="ifRoom"
-        android:title="Share" />
+        android:title="SMS" />
+    <item android:id="@+id/menu_mail"
+        app:showAsAction="ifRoom"
+        android:title="E-Mail" />
 </menu>
