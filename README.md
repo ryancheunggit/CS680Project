@@ -1,4 +1,4 @@
-# CASCA: A clean calender application for Android Devices
+# CASCA: A clean calender app for Android Devices
 ## Group Project for CS680 @ Bentley University
 ## Team Members: 
   + [Ryan Zhang](https://github.com/ryancheunggit)        
