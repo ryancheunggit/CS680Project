@@ -212,11 +212,10 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
 
                     alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureMillis, pendingIntent);
 
-                    Log.d("WhatTime", "calendar.getTimeInMillis(): " + calendar.getTimeInMillis());
-                    Log.d("WhatTime", "calendarMillis - 300000: " + (calendar.getTimeInMillis() - 5 * 1000 * 60));
-                    Log.d("WhatTime", "SystemClock.elapsedRealtime(): " + SystemClock.elapsedRealtime());
-                    Log.d("WhatTime", "futureMillis: " + futureMillis);
-
+                    //Log.d("WhatTime", "calendar.getTimeInMillis(): " + calendar.getTimeInMillis()); // debug output
+                    //Log.d("WhatTime", "calendarMillis - 300000: " + (calendar.getTimeInMillis() - 5 * 1000 * 60)); // debug output
+                    //Log.d("WhatTime", "SystemClock.elapsedRealtime(): " + SystemClock.elapsedRealtime()); // debug output
+                    //Log.d("WhatTime", "futureMillis: " + futureMillis); // debug output
                     // go back to MainActivity
                     Intent goBack = new Intent(this, MainActivity.class);
                     startActivity(goBack);
@@ -225,10 +224,6 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
             }
         return true;
     }
-
-
-
-
 }
 
 

@@ -67,8 +67,8 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         // display information about events
         eventTitle.setText(ent.getEventTitle());
         eventLocation.setText(ent.getLocation());
-        eventStartTime.setText(ent.getStartTime());
-        eventEndTime.setText(ent.getEndTime());
+        eventStartTime.setText(appendZeroToMinutes(ent.getStartTime()));
+        eventEndTime.setText(appendZeroToMinutes(ent.getEndTime()));
         eventDate.setText(ent.getDateT());
         eventDescription.setText(ent.getDescription());
 
@@ -306,5 +306,13 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         speaker.stop();
         speaker.shutdown();
         Log.d("DebugTTS", "shutdown TTS");
+    }
+
+    // helper method to add 0 to minutes if the value is 0
+    public String appendZeroToMinutes(String time){
+        if (time.substring(time.indexOf(":")+1).equals("0")){
+            time += "0";
+        }
+        return time;
     }
 }

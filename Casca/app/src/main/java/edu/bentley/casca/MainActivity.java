@@ -158,7 +158,12 @@ public class MainActivity extends AppCompatActivity {
 
         // add events info to the array based on query results
         for (int i = 0; i < resultList.size(); i++){
-            eventList.add(resultList.get(i).getStartTime() + " " + resultList.get(i).getEventTitle());
+
+            String eventTime = resultList.get(i).getStartTime();
+            if (eventTime.substring(eventTime.indexOf(":")+1).equals("0")){
+                eventTime += "0";
+            }
+            eventList.add(eventTime + " " + resultList.get(i).getEventTitle());
         }
 
     }
