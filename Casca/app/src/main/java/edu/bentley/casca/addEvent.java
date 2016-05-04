@@ -1,9 +1,11 @@
 package edu.bentley.casca;
 
+import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,9 +28,6 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     private EditText edit_endT;
     private EditText edit_date;
     private EditText edit_des;
-    private NotificationManager mNotificationManager;
-    private Notification notifyDetails;
-    private int SIMPLE_NOTFICATION_ID = 1;
     private SQLHelper helper;
     // Variable for storing current date and time
     private int mYear, mMonth, mDay, mHour, mMinute;
@@ -138,10 +137,10 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
             case R.id.menu_create_event:
                 // will do naive validation first
                 if (edit_eventTitle.getText().toString().equals("") ||
-                        edit_location.getText().toString().equals("") ||
-                        edit_startT.getText().toString().equals("") ||
-                        edit_endT.getText().toString().equals("") ||
-                        edit_date.getText().toString().equals("")){
+                    edit_location.getText().toString().equals("") ||
+                    edit_startT.getText().toString().equals("") ||
+                    edit_endT.getText().toString().equals("") ||
+                    edit_date.getText().toString().equals("")){
                     // if there are fields that is still empty, show a message, do not do insert
                     Toast.makeText(this, "Invalid Inputs", Toast.LENGTH_SHORT);
                 }
@@ -149,12 +148,12 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     // if necessary fields are not empty
                     //save the current info as a new entry to the database
                     helper.addEvent(new event(
-                        edit_eventTitle.getText().toString(),
-                        edit_location.getText().toString(),
-                        edit_startT.getText().toString(),
-                        edit_endT.getText().toString(),
-                        edit_date.getText().toString(),
-                        edit_des.getText().toString()
+                    edit_eventTitle.getText().toString(),
+                    edit_location.getText().toString(),
+                    edit_startT.getText().toString(),
+                    edit_endT.getText().toString(),
+                    edit_date.getText().toString(),
+                    edit_des.getText().toString()
                     ));
                     // Log.d("DebugInsert", edit_eventTitle.getText().toString()); // debug print out
 
@@ -179,41 +178,44 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     // Log.d("DebugAdd", edit_startT.getText().toString()); //debug output
 
                     calendar.set(Calendar.YEAR, Integer.parseInt(Year));
-                    calendar.set(Calendar.MONTH, Integer.parseInt(Month));  //Note: might need to -1
+                    calendar.set(Calendar.MONTH, Integer.parseInt(Month) -1 );  //Note: need to -1
                     calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(Day));
                     calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Hour));
                     calendar.set(Calendar.MINUTE, Integer.parseInt(Minute));
                     calendar.set(Calendar.SECOND, 0);
 
                     // create a notification
-                    mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    Intent notifyIntent = new Intent(this, displayDetail.class);
+                    Notification.Builder builder = new Notification.Builder(this);
+                    builder.setContentTitle("Casca");
+                    builder.setContentText(edit_eventTitle.getText().toString() + " starts at " +
+                            edit_startT.getText().toString());
+                    builder.setSmallIcon(R.drawable.icon);
+
+                    Notification notification = builder.build();
+                    Intent notifyIntent = new Intent(this, NotificationPublisher.class);
                     // put id to intent
-                    notifyIntent.putExtra("id", "" + id);
+                    notifyIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, id);
+                    notifyIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
                     // Log.d("Did I got the id?", id+""); //debug output
 
                     //create pending intent to wrap intent so that it
                     //will fire when notification selected.
                     //The PendingIntent can only be used once.
-                    PendingIntent pendingIntent = PendingIntent.getActivity(
-                            this, 0, notifyIntent,
-                            PendingIntent.FLAG_ONE_SHOT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                        this, 0, notifyIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
-                    //set icon, text, and time on notification status bar
-                    notifyDetails = new Notification.Builder(this)
-                        .setContentTitle(edit_eventTitle.getText().toString())
-                        .setContentText(edit_des.getText().toString())
-                        .setWhen(calendar.getTimeInMillis() - 5 * 1000 * 60)
-                        .setSmallIcon(R.drawable.icon)
-                        .addAction(R.drawable.icon, "casca", pendingIntent)
-                        //set Android to vibrate when notified
-                        .setVibrate(new long[]{1000, 1000, 2000, 2000})
-                        .build();
+                    long timeDifference = (calendar.getTimeInMillis() - 5 * 1000 * 60) - System.currentTimeMillis();
+                    long futureMillis = SystemClock.elapsedRealtime() + timeDifference;
 
-                    Log.d("What specified time", "" + (calendar.getTimeInMillis() - 5 * 1000 * 60));
-                    Log.d("What system time", "" + System.currentTimeMillis());
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-                    mNotificationManager.notify(SIMPLE_NOTFICATION_ID, notifyDetails);
+                    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureMillis, pendingIntent);
+
+                    Log.d("WhatTime", "calendar.getTimeInMillis(): " + calendar.getTimeInMillis());
+                    Log.d("WhatTime", "calendarMillis - 300000: " + (calendar.getTimeInMillis() - 5 * 1000 * 60));
+                    Log.d("WhatTime", "SystemClock.elapsedRealtime(): " + SystemClock.elapsedRealtime());
+                    Log.d("WhatTime", "futureMillis: " + futureMillis);
 
                     // go back to MainActivity
                     Intent goBack = new Intent(this, MainActivity.class);
