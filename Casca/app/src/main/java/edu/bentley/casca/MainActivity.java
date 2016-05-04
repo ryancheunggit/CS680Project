@@ -1,7 +1,5 @@
 package edu.bentley.casca;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,14 +28,16 @@ public class MainActivity extends AppCompatActivity {
     // use it to populate the ListView it's attached to.
     private ArrayAdapter<String> eventListAdapter = null;
     // an empty array
-    private String[] eventListData = {"123","123"};
+    private String[] eventListData = {"0306", // My birthday!!!!
+            "0519" // My wedding day!!!!
+    };
     // the listView that show events line by line
     private ListView listView;
     // create an array list with default values
     ArrayList<String> eventList = new ArrayList<String>(Arrays.asList(eventListData));
     ArrayList<event> resultList;
 
-    // reference to the calander view
+    // reference to the calenderview
     private CalendarView calenderview;
 
     @Override
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         } catch(SQLException e) {
             Log.d("SQLiteDemo", "Create database failed");
         }
-
 
         // get the current day, month and year
         Calendar c = Calendar.getInstance();
@@ -89,36 +88,41 @@ public class MainActivity extends AppCompatActivity {
 
         // define event handler on the item in listView been clicked
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //get the id for event
-            int clickedEventId = resultList.get(position).getId();
-            // Log.d("DebugWhatPosition", ""+position); // debug print out
-            // Log.d("DebugWhatId", ""+clickedEventId); // debug print out
-            // create an intent
-            Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
-            // put the id of the event as extra data to the intent
-            displayDetailIntent.putExtra("id", "" + clickedEventId);
-            // start the displayDetail activity using the intent, the id number will be passed
-            startActivity(displayDetailIntent);
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //get the id for event
+                int clickedEventId = resultList.get(position).getId();
+                // Log.d("DebugWhatPosition", ""+position); // debug print out
+                // Log.d("DebugWhatId", ""+clickedEventId); // debug print out
+                // create an intent
+                Intent displayDetailIntent = new Intent(MainActivity.this, displayDetail.class);
+                // put the id of the event as extra data to the intent
+                displayDetailIntent.putExtra("id", "" + clickedEventId);
+                // start the displayDetail activity using the intent, the id number will be passed
+                startActivity(displayDetailIntent);
             }
         });
 
+        // grab reference to the calenderview
         calenderview = (CalendarView) findViewById(R.id.calendarView);
+        // set up listener handler user click on days in the calendar view
         calenderview.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int day) {
-            // Log.d("calendarView", "whats the year: " + year + "");   //debug output
-            // Log.d("calendarView", "whats the month: " + month + ""); //debug output
-            // Log.d("calendarView", "whats the day: " + day + "");     //debug output
-            // regenerate the list
-            // month start from 0 by default here, should + 1 to get the actual month
-            initializeList(year + "", (month+1) + "", day + "");
-            eventListAdapter.notifyDataSetChanged();
+                // Log.d("calendarView", "whats the year: " + year + "");   //debug output
+                // Log.d("calendarView", "whats the month: " + month + ""); //debug output
+                // Log.d("calendarView", "whats the day: " + day + "");     //debug output
+
+                // regenerate the list using only events of that perticular day
+                // ==== month start from 0 by default here, should + 1 to get the actual month ====
+                initializeList(year + "", (month+1) + "", day + "");
+                // update the listView
+                eventListAdapter.notifyDataSetChanged();
             }
         });
     }
 
+    // inflate the menu from xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -132,10 +136,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_event: {
+                // create intent and start addEvent activity
                 Intent addEventIntent = new Intent(this, addEvent.class);
-                //startActivity(addEventIntent);
                 startActivityForResult(addEventIntent,1);
-                // Toast.makeText(this, "You clicked add event", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(this, "You clicked add event", Toast.LENGTH_SHORT).show(); // debug purpose
                 break;
             }
         }
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * helper method fill the eventlist with events of a given day.
+     * helper method that clear and refill the eventlist with events of a given day.
      * */
     public void initializeList(String year, String month, String day){
         // query the database and get events for that day
@@ -159,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // define the behavior when switch back to MainActivity from either displayDetail or addEvent
     @Override
     public void onResume(){
         super.onResume();
@@ -167,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         String day = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
         String month = String.valueOf(c.get(Calendar.MONTH)+1);
         String year = String.valueOf(c.get(Calendar.YEAR));
+        // will always show the current day when get back
         initializeList(year, month, day);
         eventListAdapter.notifyDataSetChanged();
     }

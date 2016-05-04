@@ -26,6 +26,7 @@ import android.app.FragmentManager;
 import android.location.*;
 
 public class displayDetail extends AppCompatActivity implements OnClickListener, OnInitListener {
+
     private SQLHelper helper;
     private TextView eventTitle;
     private TextView eventLocation;
@@ -52,7 +53,6 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
 
         // get the event based on id key value from the database
         event ent = helper.queryEvent(id);
-
         // Log.d("DebugDetailId", ent.getId()+"");  // debug output
         // Log.d("DebugDetailId", ent.getStartTime()+"");  // debug output
 
@@ -101,6 +101,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         flyto(newLatLng, 17, 3000);
     }
 
+    // listeners for textView widgets, all used to get user inputs
     @Override
     public void onClick(View view) {
         // defines event handling for text view
@@ -121,6 +122,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         }
     }
 
+    // inflate the menu from xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -135,7 +137,6 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         switch (item.getItemId()) {
             case R.id.menu_share: {
                 String message = prepareMessage();
-
                 // Log.d("DebugMessage:", message); //debug printout
                 // create intent obj
                 Intent smsShareIntent = new Intent(Intent.ACTION_VIEW);
@@ -176,7 +177,6 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             int result = speaker.setLanguage(Locale.US);
-
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TextToSpeech", "Language is not available.");
@@ -201,7 +201,7 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         return returnDate;
     }
 
-    //get correct suffix of dayofmonth
+    //get correct suffix of dayofmonth === neat work yuge!
     public String getDayOfMonthSuffix(final int n) {
         if (n >= 11 && n <= 13) {
             return "th";
@@ -290,7 +290,6 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
                 "Description: " + eventDescription.getText().toString();
         return message;
     }
-
 
     // remember to shunt down tts
     @Override

@@ -1,18 +1,15 @@
 package edu.bentley.casca;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.view.View.OnClickListener;
 import android.widget.DatePicker;
@@ -33,12 +30,10 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     private Notification notifyDetails;
     private int SIMPLE_NOTFICATION_ID = 1;
     private SQLHelper helper;
-
     // Variable for storing current date and time
     private int mYear, mMonth, mDay, mHour, mMinute;
 
     /** Called when the activity is first created. */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,10 +52,11 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
         edit_endT.setOnClickListener(this);
         edit_date.setOnClickListener(this);
 
+        // database helper
         helper = new SQLHelper(this);
-
     }
 
+    // listeners for editText widgets, all used to get user inputs
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -72,15 +68,13 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
 
                 // Launch Time Picker Dialog
                 TimePickerDialog tpd = new TimePickerDialog(this,
-                        new TimePickerDialog.OnTimeSetListener() {
-
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                // Display Selected time in textbox
-                                edit_startT.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            // Display Selected time in textbox
+                            edit_startT.setText(hourOfDay + ":" + minute);
+                        }
+                    }, mHour, mMinute, false);
                 tpd.show();
                 break;
             case R.id.edit_endT_f:
@@ -91,15 +85,13 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
 
                 // Launch Time Picker Dialog
                 TimePickerDialog tpd1 = new TimePickerDialog(this,
-                        new TimePickerDialog.OnTimeSetListener() {
-
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                // Display Selected time in textbox
-                                edit_endT.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            // Display Selected time in textbox
+                            edit_endT.setText(hourOfDay + ":" + minute);
+                        }
+                    }, mHour, mMinute, false);
                 tpd1.show();
                 break;
             case R.id.edit_date_f:
@@ -111,20 +103,18 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
 
                 // Launch Date Picker Dialog
                 DatePickerDialog dpd = new DatePickerDialog(this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
-                                // Display Selected date in textbox
-                                edit_date.setText(dayOfMonth + "-"
-                                        + (monthOfYear + 1) + "-" + year);
-
-                            }
-                        }, mYear, mMonth, mDay);
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                            // Display Selected date in textbox
+                            edit_date.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                        }
+                    }, mYear, mMonth, mDay);
                 dpd.show();
         }
     }
 
+    // inflate the menu from xml file
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -138,6 +128,7 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_clear_event:
+                // set editText content to blank
                 edit_eventTitle.setText("");
                 edit_des.setText("");
                 edit_location.setText("");
@@ -145,6 +136,7 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                 edit_endT.setText("");
                 break;
             case R.id.menu_create_event:
+                // will do naive validation first
                 if (edit_eventTitle.getText().toString().equals("") ||
                         edit_location.getText().toString().equals("") ||
                         edit_startT.getText().toString().equals("") ||
@@ -154,21 +146,22 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
                     Toast.makeText(this, "Invalid Inputs", Toast.LENGTH_SHORT);
                 }
                 else {
-                    // if fields are not empty
+                    // if necessary fields are not empty
                     //save the current info as a new entry to the database
                     helper.addEvent(new event(
-                            edit_eventTitle.getText().toString(),
-                            edit_location.getText().toString(),
-                            edit_startT.getText().toString(),
-                            edit_endT.getText().toString(),
-                            edit_date.getText().toString(),
-                            edit_des.getText().toString()
+                        edit_eventTitle.getText().toString(),
+                        edit_location.getText().toString(),
+                        edit_startT.getText().toString(),
+                        edit_endT.getText().toString(),
+                        edit_date.getText().toString(),
+                        edit_des.getText().toString()
                     ));
-                    // Log.d("DebugInsert", edit_eventTitle.getText().toString());                     // debug print out
+                    // Log.d("DebugInsert", edit_eventTitle.getText().toString()); // debug print out
 
+                    // query the id (primary key) value for the event just inserted
                     int id = helper.getId();
 
-                    // get time data info
+                    // get detailed time info of the just added event
                     String date = edit_date.getText().toString();
                     String Year = date.substring(date.lastIndexOf("-") + 1);
                     String Month = date.substring(date.indexOf("-") + 1, date.lastIndexOf("-"));
@@ -208,20 +201,19 @@ public class addEvent extends AppCompatActivity implements OnClickListener {
 
                     //set icon, text, and time on notification status bar
                     notifyDetails = new Notification.Builder(this)
-                            .setContentTitle(edit_eventTitle.getText().toString())
-                            .setContentText(edit_des.getText().toString())
-                            .setWhen(calendar.getTimeInMillis() - 5 * 1000 * 60)
-                            .setSmallIcon(R.drawable.icon)
-                            .addAction(R.drawable.icon, "casca", pendingIntent)
-                            //set Android to vibrate when notified
-                            .setVibrate(new long[]{1000, 1000, 2000, 2000})
-                            .build();
+                        .setContentTitle(edit_eventTitle.getText().toString())
+                        .setContentText(edit_des.getText().toString())
+                        .setWhen(calendar.getTimeInMillis() - 5 * 1000 * 60)
+                        .setSmallIcon(R.drawable.icon)
+                        .addAction(R.drawable.icon, "casca", pendingIntent)
+                        //set Android to vibrate when notified
+                        .setVibrate(new long[]{1000, 1000, 2000, 2000})
+                        .build();
 
                     Log.d("What specified time", "" + (calendar.getTimeInMillis() - 5 * 1000 * 60));
                     Log.d("What system time", "" + System.currentTimeMillis());
 
-                    mNotificationManager.notify(SIMPLE_NOTFICATION_ID,
-                            notifyDetails);
+                    mNotificationManager.notify(SIMPLE_NOTFICATION_ID, notifyDetails);
 
                     // go back to MainActivity
                     Intent goBack = new Intent(this, MainActivity.class);
