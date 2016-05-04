@@ -1,9 +1,9 @@
 # CASCA: A clean calender application for Android Devices
 ## Group Project for CS680 @ Bentley University
 ## Team Members: 
-  + Ryan Zhang[https://github.com/ryancheunggit]    
-  + Yuge Xiao[https://github.com/YugeX]    
-  + Yasha Guo[https://github.com/gys110110]    
+  + [Ryan Zhang](https://github.com/ryancheunggit)        
+  + [Yuge Xiao](https://github.com/YugeX)        
+  + [Yasha Guo](https://github.com/gys110110)        
 ## Description   
 CASCA is a light weight easy to use android calendar application with minimal design principal.   
 Main features:
