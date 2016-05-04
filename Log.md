@@ -31,9 +31,12 @@
 + Wrote code to pass the id of the event been clicked at main_activity and when displayDetail is started, we now query that event and display the info to user.
 
 ## May 1 2016
-+ Share event info with SMS
-+ Tried to implement notification
-+ Added TTS
++ Share event info with SMS.
++ Tried to implement notification.
++ Added TTS.
 
 ## May 2 2016
-+ Added Google Map display the location of event
++ Added Google Map display the location of event.
+
+## May 4 2016
++ Figured out how to wake up app and generate a notification 5 minutes before event.
