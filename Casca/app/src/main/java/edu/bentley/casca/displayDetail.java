@@ -93,8 +93,8 @@ public class displayDetail extends AppCompatActivity implements OnClickListener,
         // Log.d("LatLng", newLatLng.toString()); //debug output
         // use a marker on map
         MarkerOptions markerOptions = new MarkerOptions()
-                .position(newLatLng)
-                .title(newLatLng.toString());
+            .position(newLatLng)
+            .title(newLatLng.toString());
         myMap.addMarker(markerOptions);
 
         // move the camera to the initial position using an animation
